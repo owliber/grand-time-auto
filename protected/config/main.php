@@ -117,5 +117,6 @@ return array(
 		// this is used in contact page
 		'adminEmail'=>'owliber@yahoo.com',
                 'companyName'=>'Grand Time Auto',
+                'version'=>'1.1.0'
 	),
 );

@@ -58,7 +58,7 @@
         ),
     ));
     ?>
-    <!--<div style="margin:5px 10px 0 0; right:10px; color: #ff0000; font-weight: bold; font-size:18px; position:absolute;">Note: This is a development and test instance only.</div>-->
+    <div style="margin:5px 10px 0 0; right:10px; color: #000; font-size:9px; position:absolute;">GTAApp Ver <?php echo Yii::app()->params['version']; ?></div>
     <?php if (isset($this->breadcrumbs)): ?>
         <?php
         $this->widget('bootstrap.widgets.TbBreadcrumb', array(
