@@ -1,0 +1,50 @@
+/**
+ * @author owliber <owliber@yahoo.com>
+ * @date Apr 13, 2015
+ * @filename custom.css
+ */
+
+// adjust span-24 left margin
+.span-24 {margin-left:0px}
+
+.hero-unit {background-color: #FFFFBF;}
+
+#lap-level div.span-5,
+#lap-level div.span-10a,
+#lap-level div.span-20a
+{
+    font-weight:bold;
+    padding: 20px 10px;
+    margin: 5px 4px 5px 4px;
+    text-align: center;
+    //background-color: #ff0000; //#fbeed5;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+    box-shadow: 5px 5px #888, -2px -2px #f4f4f4; // 0px 0px 3px 3px #cc6600;
+    color:#fff;
+}
+#lap-level div.red {background-color: #ff0000; color: #fff;}  
+#lap-level div.yellow {background-color: #fff200; color: #000;}
+#lap-level div.green {background-color: #098509}
+#lap-level div.gray {background-color: #888}
+#lap-level div.yellow a,#lap-level div.green a, #lap-level div.gray a {color:#000}
+#lap-level div.empty-red {background-color: #ee5f5b}
+#lap-level div.empty-yellow {background-color: #f4bb51}
+#lap-level div.empty-green {background-color: #51a351}
+#lap-level div.empty-gray {background-color: #ccc;}
+#lap-level div.empty-gray a {color: #ba0003;}
+#lap-level a
+{
+    color:#fff;
+}
+.span-10a {width:408px;}
+.span-20a {width:844px;}
+
+.payout-details, .payout-details th, .payout-details td
+{
+    border-collapse: collapse;
+    border:1px solid #ccc;
+    padding: 5px;
+}
+.payout-details th {width: 40%; text-align:  left; font-weight: 100;}
+.subtitle {font-size:11px; color:#000;}
