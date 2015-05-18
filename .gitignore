@@ -1,0 +1,8 @@
+assets/*
+nbproject/*
+protected/runtime/*
+protected/models/TestModel.php
+protected/controllers/TestController.php
+protected/extensions/yiiwheels/widgets/redactor/assets/js/plugins/fontcolor/__MACOSX/fontcolor/._fontcolor.js
+protected/extensions/yiiwheels/widgets/redactor/assets/js/plugins/fontcolor/__MACOSX/._fontcolor
+protected/extensions/yiiwheels/widgets/redactor/assets/js/plugins/fontcolor/__MACOSX/fontcolor/._index.html
