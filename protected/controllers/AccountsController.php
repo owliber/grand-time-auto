@@ -40,7 +40,7 @@ class AccountsController extends Controller {
         
         
         
-        if(Yii::app()->user->isAdmin())
+        if(Yii::app()->user->isAdmin() || Yii::app()->user->isSalesManager())
         {
             if(isset($_GET['id']) && !empty($_GET['id']))
             {

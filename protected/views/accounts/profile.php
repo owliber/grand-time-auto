@@ -74,7 +74,7 @@ if(isset($model->account_code))
 <?php echo $form->textFieldControlGroup($model, 'email',array('class'=>'span-6','prepend'=>  TbHtml::ICON(TbHtml::ICON_ENVELOPE))); ?>
 <?php echo $form->textFieldControlGroup($model,'address1',array('class'=>'span-12')); ?>
 <?php echo $form->textFieldControlGroup($model,'address2',array('class'=>'span-12')); ?>
-<?php if(Yii::app()->user->isAdmin())
+<?php if(Yii::app()->user->isAdmin() || Yii::app()->user->isSalesManager())
 {?>    
 <?php echo $form->hiddenField($model,'referrer_id'); ?>
 <div class="control-group">
