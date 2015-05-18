@@ -9,7 +9,6 @@
 Yii::app()->clientScript->registerScript('ui','
     
         $(\'input[rel="tooltip"]\').tooltip(); 
-        //$("#RegistrationForm[referrer_name]" ).autocomplete( "option", "appendTo", "#regform-dialog" );
         
 ', CClientScript::POS_END);
  
@@ -44,7 +43,7 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
 echo $form->hiddenField($model, 'client_id');
 $this->widget('zii.widgets.jui.CJuiAutoComplete',array(
     'model'=>$model,
-    'attribute'=>'account_code',
+    'attribute'=>'account_name',
     'sourceUrl'=>  Yii::app()->createUrl('registration/clients'),
     'options'=>array(
         'minLength'=>'3',
@@ -57,6 +56,7 @@ $this->widget('zii.widgets.jui.CJuiAutoComplete',array(
         'rel'=>'tooltip',
         'title'=>'Please type a name or account code.',
         'autocomplete'=>'off',
+        'id'=>  uniqid(),
     ),        
 )); 
 ?>
@@ -140,7 +140,10 @@ $ajaxLoader = '<span id="ajaxloader" class="pull-left" style="display: none"><im
                         if(data.result_code == 0)
                         {
                             alert(data.result_msg);
-                            window.location.href = "'.Yii::app()->request->url.'";
+                            if(data.redirect == 1)
+                                window.location.href = "'.Yii::app()->request->url.'";
+                            else
+                                window.location.href = "'.Yii::app()->request->url.'/'.$clients->account_id.'";
                         }
                         else if(data.result_code == 1 || data.result_code == 2)
                         {

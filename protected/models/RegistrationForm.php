@@ -11,6 +11,7 @@ class RegistrationForm extends CFormModel
     
     public $_conn;
     public $account_id;
+    public $account_name;
     public $client_id;
     public $new_account_id;
     public $referrer_id;
@@ -32,7 +33,7 @@ class RegistrationForm extends CFormModel
     {
         return array(
             array('account_id,referrer_id,first_name,last_name,account_code,email,account_type_id,pos','required'),
-            array('sponsor_id,temp_password,client_id','safe'),
+            array('account_name,sponsor_id,temp_password,client_id','safe'),
             array('email','email'),
             array('account_code','length','is'=>12),
             array('account_code','checkCode'),

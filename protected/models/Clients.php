@@ -206,7 +206,7 @@ class Clients extends CFormModel
                 lo.client_id,
                 a.account_code,
                 lo.sponsor_id,
-                lo.referrer_id,
+                a.referrer_id,
                 lo.pos
               FROM $lap_no lo
                 INNER JOIN accounts a ON lo.client_id = a.account_id

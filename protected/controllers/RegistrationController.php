@@ -117,10 +117,10 @@ class RegistrationController extends Controller
                 Mailer::sendAccountInfo($params);
                 
             }
-            
             echo CJSON::encode(array(
                   'result_code'=>$result['result_code'],
                   'result_msg'=>$result['result_msg'],
+                  'redirect'=>$_POST['redirect'],
              ));
             Yii::app()->end();
 
@@ -199,7 +199,7 @@ class RegistrationController extends Controller
                 {
                     $arr[] = array(
                         'id'=>$row['client_id'],
-                        'value'=>$row['account_code'],
+                        'value'=>$row['client'],
                         'label'=>$row['client'],
                     );
                 }

@@ -36,6 +36,7 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
 <?php echo $form->textFieldControlGroup($model,'account_code'); ?>
 <?php echo $form->textFieldControlGroup($model, 'email',array('class'=>'span-8')); ?>
 <?php echo $form->hiddenField($model, 'referrer_id'); ?>
+<?php echo TbHtml::hiddenField('redirect', isset($_GET['id']) ? true : false) ?>
 <div class="control-group">
     <?php echo TbHtml::label('Sponsor <span class="required">*</span>', 'referrer_name',array('class'=>'control-label required')); ?>
     <div class="controls">

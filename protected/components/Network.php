@@ -83,7 +83,7 @@ class Network extends Controller
                                 $("#RegistrationForm_account_type_id").val(data.account_type_id);
                                 $("#regform-dialog").modal("show");
                             }',
-                            'beforeSend' => 'function() {           
+                            'beforeSend' => 'function() { 
                                 $("#ajax-loader").addClass("loading");
                              }',
                              'complete' => 'function() {
