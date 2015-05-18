@@ -50,6 +50,7 @@ $this->widget('zii.widgets.jui.CJuiAutoComplete',array(
         'showAnim'=>'fold',
         'focus' => 'js:function(event, ui){$("#RegistrationForm_account_code").val(ui.item["value"])}',
         'select' => 'js:function(event, ui){$("#RegistrationForm_client_id").val(ui.item["id"]); }',
+        'delay'=>500,
     ),
     'htmlOptions'=>array(
         'class'=>'span3',
