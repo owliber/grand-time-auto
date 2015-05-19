@@ -258,8 +258,7 @@ class AccountsController extends Controller {
 
     public function actionValidate()
     {
-
-        if(isset($_GET['key']))
+        if(isset($_GET['key']) && ctype_alnum($_GET['key']))
         {
             if(strlen($_GET['key']) == 40)
             {
@@ -267,15 +266,20 @@ class AccountsController extends Controller {
                 $model->hashkey = $_GET['key'];
 
                 $result = $model->validateKey();
-
-                $email = $result['email'];
-
-                if($email != "")
+                
+                if(count($result)>0)
                 {
+                    $email = $result[0]['email'];
                     //Get user info and redirect to 
-                    $url = array('accounts/reset?key='.$model->hashkey.'&email='.$email);
+                    $url = Yii::app()->createUrl('/accounts/reset', array('key'=>$model->hashkey,'email'=>$email));
                     $this->redirect($url);
                 }
+                else
+                {
+                    
+                    $this->redirect(Yii::app()->createUrl('/site/login'));
+                }
+
 
                 $this->render('forgot',array(
                     'model'=>$model,
@@ -288,6 +292,10 @@ class AccountsController extends Controller {
                 $this->dialogMessage = "Oops! An error occured or the key is invalid. Please try again.";
             }
 
+        }
+        else
+        {
+            $this->redirect(Yii::app()->createUrl('/site/login'));
         }
 
     }
