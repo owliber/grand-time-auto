@@ -41,7 +41,7 @@ class ResetPasswordModel extends CFormModel
                 . "WHERE a.update_key = :hashkey AND a.update_password = 1";
         $command = $conn->createCommand($sql);
         $command->bindParam(':hashkey', $this->hashkey);
-        $result = $command->queryRow();
+        $result = $command->queryAll();
         return $result;
     }
     
