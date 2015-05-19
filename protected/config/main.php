@@ -73,7 +73,7 @@ return array(
 		
 		'urlManager'=>array(
 			'urlFormat'=>'path',
-                        'showScriptName'=>true,
+                        'showScriptName'=>false,
                         'caseSensitive'=>true,
 			'rules'=>array(
 				'<controller:\w+>/<id:\d+>'=>'<controller>/view',
