@@ -73,7 +73,8 @@
     <div class="clear"></div>
 
     <div id="footer">
-        Copyright &copy; <?php echo date('Y'); ?> by <?php echo Yii::app()->params['companyName']; ?> &mdash; www.grandtimeauto.com
+        Copyright &copy; <?php echo date('Y'); ?> by <?php echo Yii::app()->params['companyName']; ?> &mdash; www.grandtimeauto.com <br />
+        <span id="siteseal"><script type="text/javascript" src="https://seal.starfieldtech.com/getSeal?sealID=sq7VhoG3Y9KK9BiltGfHAoSGJc6q1fvbNb7dzkJEnO2pWTcoEYs8wBmwvlAZ"></script></span>
     </div><!-- footer -->
 
 </body>
