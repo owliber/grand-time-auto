@@ -17,7 +17,7 @@ class Mailer
     {
         $email = new EmailLogModel();
         $message_template = Tools::get_template(self::REGISTRATION_TMPL);      
-        $activationLink = 'http://clients.grandtimeauto.com/accounts/activate?code='.$params['account_code'].'&email='.$params['email_address'];
+        $activationLink = Yii::app()->createAbsoluteUrl('/accounts/activate', array('code'=>$params['account_code'],'email'=>$params['email_address']));
         
         $placeholders = array(
             'CLIENT' => $params['client_name'],
@@ -86,7 +86,8 @@ class Mailer
     public function sendResetLink($params)
     {
         $message_template = Tools::get_template(self::RESET_LINK_TMPL); 
-        $resetLink = 'http://clients.grandtimeauto.com/accounts/validate?key=';
+        $resetLink = Yii::app()->createAbsoluteUrl('/accounts/validate', array('key'=>''));
+        
         $email = $params['email'];
         
         $key = $params['key'];
