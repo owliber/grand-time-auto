@@ -77,6 +77,7 @@ class Network extends Controller
                             ),
                             'dataType' => 'json',
                             'success' => 'function(data){
+                                $(".modal-header").html(data.header);
                                 $("#RegistrationForm_pos").val(data.position);
                                 $("#RegistrationForm_account_id").val(data.account_id);
                                 $("#RegistrationForm_sponsor_id").val(data.sponsor_id);
@@ -213,14 +214,11 @@ class Network extends Controller
                     }
                     else
                     {
-//                        if($lap_no > 1)
-//                            $link = '&nbsp;';
-//                        else
-//                            $link = Network::showLink($sponsor_id,$client_id,$account_type_id,$pos2);
                         if($is_form)
                             $link = Network::showLink($sponsor_id,$client_id,$account_type_id,$pos2);
                         else
                             $link = '&nbsp;';
+                        
                         $cssClass = "empty-gray";
                         $client_name = 'Open';
                     }
