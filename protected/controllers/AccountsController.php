@@ -269,7 +269,7 @@ class AccountsController extends Controller {
                 
                 if(count($result)>0)
                 {
-                    $email = $result[0]['email'];
+                    $email = $result['email'];
                     //Get user info and redirect to 
                     $url = Yii::app()->createUrl('/accounts/reset', array('key'=>$model->hashkey,'email'=>$email));
                     $this->redirect($url);
@@ -330,19 +330,19 @@ class AccountsController extends Controller {
                     
                     if(!$model->hasErrors())
                     {
-                        $this->dialogMessage = "Password was successfully changed.";
+                        $this->dialogMessage = "Great! You have successfully changed your password.";
                         $this->dialogTitle = "Successful";
                     }
                     else
                     {
-                        $this->dialogMessage = "Password change has failed";
+                        $this->dialogMessage = "Password change has failed. Please contact IT";
                         $this->dialogTitle = "Failed";
                     }
                 }
                 else
                 {
-                    $this->dialogMessage = "Password change has failed";
-                    $this->dialogTitle = "Failed";
+                    $this->dialogMessage = "Unable to validate new passwords. Please contact IT. ";
+                    $this->dialogTitle = "Validation Failed";
                 }
 
                 $this->dialogOpen = true;
