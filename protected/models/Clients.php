@@ -35,7 +35,7 @@ class Clients extends CFormModel
                     OR a.account_code LIKE :filter
                     OR a.username LIKE :filter)
                     AND a.account_type_id = :account_type
-                  ORDER BY 3";
+                  ORDER BY ad.last_name";
         
         $command = $conn->createCommand($sql);
         $command->bindParam(':filter', $filter);
@@ -123,8 +123,7 @@ class Clients extends CFormModel
                   ON ct.client_id = a.account_id
                 LEFT JOIN account_details ad
                   ON a.account_id = ad.account_id
-              WHERE ct.sponsor_id = :sponsor_id
-              ORDER BY ct.client_id ASC;";
+              WHERE ct.sponsor_id = :sponsor_id;";
         
         $command = $conn->createCommand($sql);
         $command->bindParam(':sponsor_id', $this->account_id);

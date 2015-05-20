@@ -238,7 +238,7 @@ class PayoutController extends Controller
             throw new CHttpException('Invalid access');
         }
     }
-        
+    
 }
 
 

@@ -114,17 +114,21 @@ class LapModel extends CFormModel
         if($this->lap_no == 2)
         {
             $sql = "SELECT
-                    t1.*
-                  FROM lap_two t1
-                    LEFT OUTER JOIN lap_three t2
-                      ON t1.client_id = t2.client_id
-                  WHERE t2.client_id IS NULL;";
+                        a.account_type_id,
+                        t1.*
+                      FROM lap_two t1
+                        LEFT JOIN accounts a ON t1.client_id = a.account_id
+                        LEFT OUTER JOIN lap_three t2
+                          ON t1.client_id = t2.client_id
+                      WHERE t2.client_id IS NULL;";
         }
         else
         {
             $sql = "SELECT
+                    a.account_type_id,
                     lt.*
                   FROM lap_three lt
+                    LEFT JOIN accounts a ON lt.client_id = a.account_id
                     LEFT OUTER JOIN lap_info li
                       ON lt.client_id = li.account_id
                       AND li.lap_no = 3

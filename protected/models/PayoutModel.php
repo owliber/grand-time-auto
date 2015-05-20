@@ -10,6 +10,7 @@ class PayoutModel extends CFormModel
 {
     public $_conn;
     public $account_id;
+    public $account_type_id;
     public $account_code;
     public $payout_id;
     public $lap_no;
@@ -52,6 +53,34 @@ class PayoutModel extends CFormModel
         $command = $conn->createCommand($sql);
         $command->bindParam(':code', $this->matrix_code);
         $result = $command->queryAll();
+        return $result;
+    }
+    
+    public function getPayoutMatrixByAccountType()
+    {
+        $conn = $this->_conn;
+        $sql = "SELECT * FROM payout_matrix 
+                WHERE account_type_id = :account_type_id 
+                AND lap_no = :lap_no
+                AND head_count = :head_count 
+                AND is_bonus = 0 ";
+        $command = $conn->createCommand($sql);
+        $command->bindParam(':account_type_id', $this->account_type_id);
+        $command->bindParam(':lap_no', $this->lap_no);
+        $command->bindParam(':head_count', $this->head_count);
+        $result = $command->queryRow();
+        return $result;
+    }
+    
+    public function getPayoutMatrixBonus()
+    {
+        $conn = $this->_conn;
+        $sql = "SELECT * FROM payout_matrix 
+                WHERE account_type_id = :account_type_id 
+                AND is_bonus = 1 ";
+        $command = $conn->createCommand($sql);
+        $command->bindParam(':account_type_id', $this->account_type_id);
+        $result = $command->queryRow();
         return $result;
     }
     

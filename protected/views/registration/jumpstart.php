@@ -44,7 +44,7 @@ echo $form->hiddenField($model, 'client_id');
 $this->widget('zii.widgets.jui.CJuiAutoComplete',array(
     'model'=>$model,
     'attribute'=>'account_name',
-    'sourceUrl'=>  Yii::app()->createUrl('registration/clients'),
+    'sourceUrl'=>  Yii::app()->createUrl('registration/clients',array('atid'=>$clients->account_type_id)),
     'options'=>array(
         'minLength'=>'3',
         'showAnim'=>'fold',

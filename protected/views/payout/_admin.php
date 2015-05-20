@@ -108,6 +108,7 @@ $this->widget('zii.widgets.jui.CJuiDatePicker', array(
     'id'=>'payout-grid',
     'type'=>  TbHtml::GRID_TYPE_HOVER,
     'dataProvider'=>$dataProvider,
+    'htmlOptions'=>array('style'=>'font-size:11px'),
     'enablePagination' => true,
     'columns'=>array(
         array(
@@ -123,8 +124,8 @@ $this->widget('zii.widgets.jui.CJuiDatePicker', array(
             ),
         array('name'=>'account_name', 
                 'header'=>'Client Name',
-                'htmlOptions'=>array('style'=>'text-align:center;'),
-                'headerHtmlOptions' => array('style' => 'text-align:center'),
+                'htmlOptions'=>array('style'=>'text-align:left;'),
+                'headerHtmlOptions' => array('style' => 'text-align:left'),
             ),
         array('name'=>'account_code', 
                 'header'=>'Client Code',
@@ -217,7 +218,6 @@ $this->widget('zii.widgets.jui.CJuiDatePicker', array(
                     ),
                 ),
                 'header'=>'Options',
-                'htmlOptions'=>array('style'=>'width:75px;text-align:center'),
                 'headerHtmlOptions'=>array('style'=>'text-align:center'),
             ),
     ),

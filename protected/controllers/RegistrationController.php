@@ -60,7 +60,38 @@ class RegistrationController extends Controller
     
     public function actionMain()
     {
-        $this->render('turbo');
+        $this->initialize();
+        
+        $model = new RegistrationForm();
+        $clients = new Clients();
+        $reference = new ReferenceModel();
+        
+        if(isset($_POST['RegistrationForm']))
+        {
+            $model->attributes = $_POST['RegistrationForm'];
+            $clients->account_id = $model->client_id;
+        }
+        else
+        {
+            if(isset($_GET['id']))
+            {
+                $clients->account_id = $_GET['id'];
+            }
+            else
+            {
+                $clients->account_id = $reference->get_variable_value('MT_BASE_ACCOUNT_ID');
+            }
+        }
+
+        $model->account_id = $clients->account_id;
+        $client_info = $clients->getClientInfo();
+        $clients->account_type_id = $client_info['account_type_id'];
+
+        $this->render('turbo',array(
+            'client_info'=>$client_info,
+            'clients'=>$clients,
+            'model'=>$model,
+        ));
     }
     
     public function actionVip()
@@ -76,11 +107,20 @@ class RegistrationController extends Controller
             $sponsor_id = $_GET['sid'];
             $account_type_id = $_GET['atid'];   
             $position = $_GET['pos'];   
+            
+            switch ($account_type_id)
+            {
+                case 5: $header = "<h4>Jump Start Registration</h4>"; break;
+                case 6: $header = "<h4>Main Turbo Registraiton</h4>"; break;
+                case 7: $header = "<h4>VIP Nitro Registration</h4>"; break;
+            }
+            
             echo CJSON::encode(array(
                 'account_id'=>$account_id,
                 'sponsor_id'=>$sponsor_id,
                 'account_type_id'=>$account_type_id,
                 'position'=>$position,
+                'header'=>$header
             ));
             Yii::app()->end();
         }
@@ -100,7 +140,7 @@ class RegistrationController extends Controller
         
         if($model->validate())
         {
-            //Proceed to registratiion
+            //Proceed to registration
             $result = $model->register();
             
             if(!$model->hasErrors())
@@ -135,62 +175,13 @@ class RegistrationController extends Controller
         }
                      
     }
-    
-    /*
-    public static function network($client_id,$pos)
-    {
-        $client = array();
-        if(!isset($client[$client_id]['account_code']))
-             {
-                 
-                 echo TbHtml::ajaxLink('Register', 
-                    array('getsponsor'),
-                    array('type' => 'GET',
-                        'data' => array(
-                            'id'=>$model->account_id,
-                            'sid'=>$model->account_id,
-                            'atid'=>$model->account_type_id,
-                            'pos'=>$pos
-                        ),
-                        'dataType' => 'json',
-                        'success' => 'function(data){
-                            $("#RegistrationForm_account_id").val(data.account_id);
-                            $("#RegistrationForm_sponsor_id").val(data.sponsor_id);
-                            $("#RegistrationForm_account_type_id").val(data.account_type_id);
-                            $("#regform-dialog").modal("show");
-                        }',
-                        'beforeSend' => 'function() {           
-                            $("#ajax-loader").addClass("loading");
-                         }',
-                         'complete' => 'function() {
-                           $("#ajax-loader").removeClass("loading");
-                         }', 
-                    ),
-                    array('id'=>  uniqid(),
-                            'rel'=>'tooltip',
-                            'data-original-title'=>'Click to register'
-                    ));
-             }
-             else
-             {
-                 echo TbHtml::link($client[$client_id]['account_code'], 
-                        array('jumpstart',
-                            'id'=> $client[$client_id]['client'] 
-                    ), array('rel'=>'tooltip',
-                             'data-original-title'=>'Click to view the acounts downlines',
-                    ));
-                 
-             }
-    }
-     * 
-     */
-    
+        
     public function actionClients()
     {
-        if(Yii::app()->request->isAjaxRequest && isset($_GET['term']))
+        if(Yii::app()->request->isAjaxRequest && isset($_GET['term']) && isset($_GET['atid']))
         {
             $model = new Clients();
-            $model->account_type_id = 5;
+            $model->account_type_id = $_GET['atid'];
             $result = $model->getClients($_GET['term']);
 
             if(count($result)>0)

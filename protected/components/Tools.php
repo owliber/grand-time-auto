@@ -59,8 +59,9 @@ class Tools {
         return $retval;
     }
     
-    public static function add_client_count($const)
+    public static function add_client_count($account_type_id, $lap_no)
     {
+        $const = Tools::get_ref_code($account_type_id, $lap_no);
         $model = new ReferenceModel();
         $model->update_statistics($const);
     }
@@ -70,4 +71,17 @@ class Tools {
         $model = new ReferenceModel();
         $model->update_value($const,$val);
     }
+    
+    public static function get_ref_code($account_type_id, $lap_no)
+    {
+        switch($account_type_id)
+        {
+            case 5: $code = 'JS'; break;
+            case 6: $code = 'MT'; break;
+            case 7: $code = 'VN'; break;
+        }
+        $ref_code = 'LAP'.$lap_no.'_'.$code.'_TOTAL';
+        return $ref_code;
+    }
+    
 }

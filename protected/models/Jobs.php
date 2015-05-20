@@ -40,6 +40,7 @@ class Jobs extends CFormModel
                 jq.client_id,
                 jq.table_count,
                 a.account_code,
+                a.account_type_id,
                 CONCAT(COALESCE(ad.first_name, ''), ' ', COALESCE(ad.last_name, '')) AS account_name,
                 CONCAT(COALESCE(ad2.first_name, ''), ' ', COALESCE(ad2.last_name, '')) AS client_name
               FROM job_queues jq

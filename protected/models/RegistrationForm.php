@@ -143,8 +143,10 @@ class RegistrationForm extends CFormModel
                         $job->insert_queue();
                         break;
                 }
-                Tools::add_client_count('LAP1_JS_TOTAL');
+                
                 $trx->commit();
+                //Increment total client for lap 1 network
+                Tools::add_client_count($this->account_type_id, 1);
                 Tools::log(6, $this->account_code, 1);                                
                 return array(
                     'result_code'=>0,

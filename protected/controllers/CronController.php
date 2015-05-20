@@ -110,24 +110,36 @@ class CronController extends Controller
             {
                 $model->job_id = $queue['job_queue_id'];
                 $account_id = $queue['account_id'];
+                $account_type_id = $queue['account_type_id'];
                 
                 //Get reference records
                 $ref_table_count = Tools::get_value('TOTAL_TABLE_CLIENT_PER_ACCOUNT');
                 $ref_min_client = Tools::get_value('MIN_CLIENT_FOR_PAYOUT');
-
-                switch($queue['table_count'])
+                
+                $table_count = $queue['table_count'];
+                
+                switch($table_count)
                 {
                     case $ref_min_client: //Generate first payout
-                        PayoutController::generatePayout('LAP1_3', $account_id);
+                        $payout_code = $this->get_payout_code($account_type_id, $ref_min_client, $lap_no);
+                        PayoutController::generatePayout($payout_code, $account_id);
                         break;
                     
                     case $ref_table_count: //Generate payout for table completion
+                        //Insert client to lap_info as reference for table completion
                         $laps = new LapModel();
                         $laps->account_id = $account_id;
                         $laps->lapComplete($lap_no);
+                        
+                        //Advance to 2nd lap
                         LapsController::createLap(2,$account_id);
-                        Tools::add_client_count('LAP2_JS_TOTAL');
-                        PayoutController::generatePayout('LAP1_6', $account_id);
+                        
+                        //Increment total client for lap 2 network
+                        Tools::add_client_count($account_type_id, 2);
+                        
+                        //Generate payout
+                        $payout_code = $this->get_payout_code($account_type_id, $ref_table_count, $lap_no);
+                        PayoutController::generatePayout($payout_code, $account_id);
                         break;
                 }
                 
@@ -169,11 +181,18 @@ class CronController extends Controller
         {
             foreach($newrows as $row)
             {
+                //Complete lap
                 $model->account_id = $row['client_id'];
                 $model->lapComplete($lap_no);
-                Tools::add_client_count('LAP3_JS_TOTAL');
-                PayoutController::generatePayout('LAP2_6', $row['client_id']);
+                $account_type_id = $row['account_type_id'];
+                
+                //Generate payout
+                $payout_code = $this->get_payout_code($account_type_id, $ref_table_count, $lap_no);
+                PayoutController::generatePayout($payout_code, $row['client_id']);
                 LapsController::createLap(3, $row['client_id']);
+                
+                //Increment client count for lap 3 network
+                Tools::add_client_count($account_type_id, 3);
             }
         }                   
     }
@@ -196,6 +215,7 @@ class CronController extends Controller
             foreach($clients as $client)
             {
                 $client_id = $client['client_id'];
+                $account_type_id = $client['account_type_id'];
                 $network = Network::getNetworkCount($client_id, $lap_no);
                 $client_count = count($network);
                 $model->account_id = $client_id;
@@ -204,35 +224,24 @@ class CronController extends Controller
                 if($client_count >= $checkpoint)
                 {
                     $payout->head_count = $client_count;
-                    switch($client_count)
+                                        
+                    if($client_count >= Tools::get_value('MIN_CLIENT_FOR_PAYOUT'))
                     {
-                        case 3:
-                            if(!$payout->hasPayout())
-                            PayoutController::generatePayout('LAP3_3', $client_id);
-                            break;
-                        case 4:
-                            if(!$payout->hasPayout())
-                            PayoutController::generatePayout('LAP3_4', $client_id);
-                            break;
-                        case 5:
-                            if(!$payout->hasPayout())
-                            PayoutController::generatePayout('LAP3_5', $client_id);
-                            break;
-                        case 6:
-                            PayoutController::generatePayout('LAP3_6', $client_id);
-                            /** 
-                             * Generate payout for Leadership bonus
-                             * Get the referrer id of the current account
-                             */
+                        $payout_code = $this->get_payout_code($account_type_id, $client_count, $lap_no);
+                        PayoutController::generatePayout($payout_code, $client_id);
+                        
+                        if($client_count == Tools::get_value('TOTAL_TABLE_CLIENT_PER_ACCOUNT'));
+                        {
                             $info = new Clients();
                             $info->account_id = $client_id;
                             $account = $info->getClientInfo();
                             $referrer_id = $account['referrer_id'];
-                            PayoutController::generatePayout('LAP3_LB', $referrer_id);
+                            $bonus_code = $this->get_bonus_code($account_type_id);
+                            PayoutController::generatePayout($bonus_code, $referrer_id);
                             $model->lapComplete($lap_no);
-                            break;
-                            
+                        }
                     }
+                    
                 }
             } 
         }
@@ -244,6 +253,24 @@ class CronController extends Controller
         $model = new Jobs();
         $model->cron_id = $cron_id;
         $model->update_job_schedule();
+    }
+    
+    public function get_payout_code($account_type_id, $head_count, $lap_no)
+    {
+        $model = new PayoutModel();
+        $model->account_type_id = $account_type_id;
+        $model->lap_no = $lap_no;
+        $model->head_count = $head_count;
+        $result = $model->getPayoutMatrixByAccountType();
+        return $result['code'];
+    }
+    
+    public function get_bonus_code($account_type_id)
+    {
+        $model = new PayoutModel();
+        $model->account_type_id = $account_type_id;
+        $result = $model->getPayoutMatrixBonus();
+        return $result['code'];
     }
     
 }
