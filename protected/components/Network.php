@@ -169,12 +169,18 @@ class Network extends Controller
     
     public static function showNetwork($account_id, $account_type_id, $lap_no, $pos1, $pos2, $is_base = false, $is_form = false)
     {
-        switch($lap_no)
+        switch($account_type_id)
         {
-            case 1: ($is_form) ? $view = "jumpstart" : $view = "first";break;
-            case 2: $view = "second"; break;
-            case 3: $view = "third"; break;
+            case 5: $view = "jumpstart"; break;
+            case 6: $view = "main"; break;
+            case 7: $view = "vip"; break;
         }
+//        switch($lap_no)
+//        {
+//            case 1: ($is_form) ? $view = "jumpstart" : $view = "first";break;
+//            case 2: $view = "second"; break;
+//            case 3: $view = "third"; break;
+//        }
         
         if(Network::getClientCount($account_id)>0)
         {
@@ -229,10 +235,6 @@ class Network extends Controller
             {
                 if($is_base)
                 {   
-//                    if($lap_no > 1)
-//                        $link = '&nbsp;';
-//                    else
-//                        $link = Network::showLink($account_id,$account_id,$account_type_id,$pos1);
                     if($is_form)
                         $link = Network::showLink($account_id,$account_id,$account_type_id,$pos1);
                     else
@@ -254,10 +256,6 @@ class Network extends Controller
         {
             if($is_base)
             {   
-//                if($lap_no > 1)
-//                    $link = '&nbsp;';
-//                else
-//                    $link = Network::showLink($account_id,$account_id,$account_type_id,$pos1);
                 if($is_form)
                     $link = Network::showLink($account_id,$account_id,$account_type_id,$pos1);
                 else
@@ -333,6 +331,113 @@ class Network extends Controller
         }
         
         $array = array('label'=>$label,'client_id'=>$client_id,'cssClass'=>$cssClass);
+        return $array;
+    }
+    
+    public static function showTable($account_id, $account_type_id, $lap_no, $pos1, $pos2, $is_base = false, $is_form = false)
+    {
+        $view = 'table';
+        
+        if(Network::getClientCount($account_id)>0)
+        {
+            //Check if base account has client at position 0 - L
+            $rawData = Network::getClientNetwork($account_id,$lap_no,$pos1);
+            if(count($rawData)>0)
+            {
+                $client_id = $rawData[0]['client_id'];
+                $sponsor_id = $rawData[0]['sponsor_id'];
+                
+                
+                if($is_base)
+                {
+                    $link = TbHtml::link($rawData[0]['account_code'], 
+                                array($view,
+                                    'id'=> $rawData[0]['client_id'],
+                                    'lap_no'=>$lap_no
+                        ));
+                    $cssClass = "";
+                    $client_name = $rawData[0]['client_name'];
+                }
+                else
+                {
+                     //Get sponsor network at position 0 - L
+                    $result = Network::getClientNetwork($client_id,$lap_no,$pos2);
+                    if(count($result)>0)
+                    {
+                        $link = TbHtml::link($result[0]['account_code'], 
+                                array($view,
+                                    'id'=> $result[0]['client_id'],
+                                    'lap_no'=>$lap_no,
+                        ));
+                        
+                        $client_id = $result[0]['client_id'];
+                        $cssClass = "";
+                        $client_name = $result[0]['client_name'];
+                        
+
+                    }
+                    else
+                    {
+                        if($is_form)
+                            $link = Network::showLink($sponsor_id,$client_id,$account_type_id,$pos2);
+                        else
+                            $link = '&nbsp;';
+                        
+                        $cssClass = "empty-gray";
+                        $client_name = 'Open';
+                    }
+                }
+               
+            }
+            else
+            {
+                if($is_base)
+                {   
+                    if($is_form)
+                        $link = Network::showLink($account_id,$account_id,$account_type_id,$pos1);
+                    else
+                        $link = '&nbsp;';
+                }
+                else
+                {
+                    $link = '&nbsp;';
+                    
+                }
+                
+                $cssClass = "empty-gray";
+                $client_id = null;
+                $client_name = 'Open';
+            }
+
+        }
+        else
+        {
+            if($is_base)
+            {   
+                if($is_form)
+                    $link = Network::showLink($account_id,$account_id,$account_type_id,$pos1);
+                else
+                    $link = '&nbsp;';
+            }
+            else
+            {
+                $link = '&nbsp;';
+                
+            }
+            
+            $cssClass = "empty-gray";
+            $client_id = null;
+            $client_name = 'Open';
+                
+        }
+        
+        $array = array(
+            'link'=>$link,
+            'client_id'=>$client_id,
+            'client_name'=>$client_name,
+            'cssClass'=>$cssClass
+        );            
+        
         return $array;
     }
    
