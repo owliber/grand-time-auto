@@ -6,7 +6,7 @@ $this->breadcrumbs=array(
 ?>
 
 <div class="error">
-    <?php Yii::app()->user->setFlash('error', '<strong><h2>Urg! Trying to access something?</h2></strong> The page you are trying to access is either not accessible or does not actually exist.'); ?>
+    <?php Yii::app()->user->setFlash('error', '<strong><h3>Oops! Looking for something?</h3></strong> The page you are trying to access is either not accessible or does not actually exist.'); ?>
     <?php $this->widget('bootstrap.widgets.TbAlert', array(
         'block'=>true, // display a larger alert block?
         'fade'=>true, // use transitions?
