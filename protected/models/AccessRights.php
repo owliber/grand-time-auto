@@ -67,7 +67,7 @@ class AccessRights extends CFormModel
                         ON ar.menu_id = m.menu_id
                     WHERE ar.account_type_id = :account_type_id
                     AND m.status = 1
-                    ORDER BY m.menu_id;";
+                    ORDER BY ar.menu_order;";
         
         $command = $conn->createCommand($query);
         $command->bindParam(":account_type_id", $this->account_type_id);
