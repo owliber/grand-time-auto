@@ -106,7 +106,7 @@ class RegistrationController extends Controller
             $account_id = $_GET['id'];
             $sponsor_id = $_GET['sid'];
             $account_type_id = $_GET['atid'];   
-            $position = $_GET['pos'];   
+            $position = $_GET['pos'];  
             
             switch ($account_type_id)
             {
@@ -204,10 +204,10 @@ class RegistrationController extends Controller
     
     public function actionSponsors()
     {
-        if(Yii::app()->request->isAjaxRequest && isset($_GET['term']))
+        if(Yii::app()->request->isAjaxRequest && isset($_GET['term']) && isset($_GET['atid']))
         {
             $model = new Clients();
-            $model->account_type_id = 5;
+            $model->account_type_id = $_GET['atid'];
             $result = $model->getSponsors($_GET['term']);
 
             if(count($result)>0)

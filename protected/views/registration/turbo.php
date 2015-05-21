@@ -128,8 +128,8 @@ $this->widget('zii.widgets.jui.CJuiAutoComplete',array(
 $ajaxLoader = '<span id="ajaxloader" class="pull-left" style="display: none"><img src="'.Yii::app()->request->baseUrl.'/images/loader.gif" width="32px" height="32px" /> Engine starting, please wait...</span>';
     $this->widget('bootstrap.widgets.TbModal', array(
     'id' => 'regform-dialog',
-    'header' => 'Jump Start Registration',
-    'content' => $this->renderPartial('_form', array('model'=>$model), true),
+    'header' => 'Main Turbo Registration',
+    'content' => $this->renderPartial('_form', array('model'=>$model,'clients'=>$clients), true),
     'footer'=>array($ajaxLoader,
         TbHtml::ajaxSubmitButton('Register',CHtml::normalizeUrl(array('registration/register','render'=>true)),
                  array(

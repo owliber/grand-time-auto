@@ -27,6 +27,8 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
 ));
 ?>
 
+<?php //$this->renderPartial('_test',array('model'=>$model)); ?>
+
 <?php echo TbHtml::hiddenField('RegistrationForm[pos]','',array('id'=>'RegistrationForm_pos')); ?>
 <?php echo TbHtml::hiddenField('RegistrationForm[account_id]','',array('id'=>'RegistrationForm_account_id')); ?>
 <?php echo TbHtml::hiddenField('RegistrationForm[sponsor_id]','',array('id'=>'RegistrationForm_sponsor_id')); ?>
@@ -44,7 +46,7 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
         $this->widget('zii.widgets.jui.CJuiAutoComplete',array(
             'model'=>$model,
             'attribute'=>'referrer_name',
-            'sourceUrl'=>  Yii::app()->createUrl('registration/sponsors'),
+            'sourceUrl'=>  Yii::app()->createUrl('registration/sponsors',array('atid'=>$clients->account_type_id)),
             'options'=>array(
                 'minLength'=>'3',
                 'showAnim'=>'fold',

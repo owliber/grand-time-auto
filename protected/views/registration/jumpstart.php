@@ -129,7 +129,7 @@ $ajaxLoader = '<span id="ajaxloader" class="pull-left" style="display: none"><im
     $this->widget('bootstrap.widgets.TbModal', array(
     'id' => 'regform-dialog',
     'header' => 'Jump Start Registration',
-    'content' => $this->renderPartial('_form', array('model'=>$model), true),
+    'content' => $this->renderPartial('_form', array('model'=>$model,'clients'=>$clients), true),
     'footer'=>array($ajaxLoader,
         TbHtml::ajaxSubmitButton('Register',CHtml::normalizeUrl(array('registration/register','render'=>true)),
                  array(
