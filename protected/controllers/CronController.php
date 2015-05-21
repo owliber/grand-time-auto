@@ -237,7 +237,9 @@ class CronController extends Controller
                             $account = $info->getClientInfo();
                             $referrer_id = $account['referrer_id'];
                             $bonus_code = $this->get_bonus_code($account_type_id);
-                            PayoutController::generatePayout($bonus_code, $referrer_id);
+                            //Generate only if referrer_id is set
+                            if(!empty($referrer_id))
+                                PayoutController::generatePayout($bonus_code, $referrer_id);
                             $model->lapComplete($lap_no);
                         }
                     }
