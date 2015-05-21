@@ -16,7 +16,7 @@ class UserMenu extends Controller
         
         if(Yii::app()->user->isAdmin())
         {
-            $menus = $model->getAllMenus();
+            (Yii::app()->user->isGTAAdmin()) ? $menus = $model->getMenus() : $menus = $model->getAllMenus();
 
             foreach($menus as $menu)
             {

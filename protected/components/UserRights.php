@@ -42,6 +42,19 @@ class UserRights extends CWebUser
         }
     }
     
+    public static function isGTAAdmin()
+    {
+        if(Yii::app()->session['account_type_id'] == 2 )
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+
     public function isClient()
     {
         if(Yii::app()->session['account_type_id'] == 5 || Yii::app()->session['account_type_id'] == 6 || Yii::app()->session['account_type_id'] == 7 )
