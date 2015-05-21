@@ -12,6 +12,7 @@ class PayoutController extends Controller
     
     public function actionIndex()
     {
+        $this->initialize();
         $model = new PayoutModel();
         
         //Set defaults
@@ -146,10 +147,10 @@ class PayoutController extends Controller
         $payout = new PayoutModel();
         $payout->matrix_code = $payout_code;
         $payout->account_id = $account_id;
-        
+                
         /* Get the payout matrix */
         $matrix = $payout->getPayoutMatrix();
-        
+                
         foreach($matrix as $val)
         {
             $payout->matrix_id = $val['payout_matrix_id'];

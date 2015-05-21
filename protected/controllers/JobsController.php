@@ -12,6 +12,7 @@ class JobsController extends Controller
     
     public function actionIndex()
     {
+        $this->initialize();
         $model = new Jobs();
         $result = $model->get_queues();
         $model->cron_id = 1;
