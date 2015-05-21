@@ -33,6 +33,7 @@ class ProfileForm extends CFormModel
             array('account_id,first_name,last_name,email,mobile_no,birthdate','required'),
             array('referrer_id,middle_name,address1,address2','safe'),
             array('email','email'),
+            array('mobile_no','length','min'=>11,'max'=>13),
             
         );
     }
