@@ -13,6 +13,52 @@ class LapsController extends Controller
     public $dialogOpen = false;
     public $dialogTitle;
     
+    public function actionIndex()
+    {
+        $model = new LapModel();
+        $result = array();
+        $newrows = array();
+        
+        if(isset($_POST['LapModel']))
+        {
+            $model->attributes = $_POST['LapModel'];
+            switch($model->lap_no)
+            {
+                case 1: $lap_table = 'lap_one';break;
+                case 2: $lap_table = 'lap_two';break;
+                case 3: $lap_table = 'lap_three';break;
+            }
+            $model->lap_table = $lap_table;
+            
+            if($model->validate())
+            {
+                $result = $model->getLapResults();
+                
+                foreach($result as $key=>$val)
+                {
+                    $rows = $val;
+                    $clients = Network::getNetworkCount($val['account_id'], $val['lap_no']);
+                    $rows['total_clients'] = count($clients);
+                    $newrows[] = $rows;
+                }
+                $result = $newrows;
+            }
+            
+        }
+        
+        $dataProvider = new CArrayDataProvider($result,array(
+                                'keyField'=>false,
+                                'pagination'=>array(
+                                    'pageSize'=>50,
+                                ),
+                            ));
+        
+        $this->render('index',array(
+            'model'=>$model,
+            'dataProvider'=>$dataProvider
+        ));
+    }
+        
     public function actionFirst()
     {
         $model = new RegistrationForm();
@@ -174,8 +220,8 @@ class LapsController extends Controller
         
         $clients = new Clients();
         $clients->account_id = $account_id;
-        $info = $clients->getClientInfo();
-        
+        $clientinfo = $clients->getClientInfo();
+        $account_type_id = $clientinfo['account_type_id'];
         switch($lap_no)
         {
             case 1: 
@@ -204,6 +250,7 @@ class LapsController extends Controller
                     /* Lap count >= 3 */
                     if($lap_no == 2)
                     {
+                        $laps->account_type_id = $account_type_id;
                         $laps->lap_no = $lap_no;
                         $info = $laps->getLapSlot();
                         $laps->sponsor_id = $info['client_id'];
@@ -215,9 +262,9 @@ class LapsController extends Controller
                     {
                         $laps->lap_no = $lap_no;
                         
-                        $client_count = Tools::get_value('OPEN_SLOT_POS');
+                        $client_count = LapsController::getSlotPos($account_type_id);
                         do {
-                            $client_id = LapsController::getAvailableSlot($lap_no, $client_count);
+                            $client_id = LapsController::getAvailableSlot($lap_no, $client_count, $account_type_id);
                             if($client_id === false) 
                             {
                                 //Increment count by 1
@@ -232,7 +279,8 @@ class LapsController extends Controller
                                 {
                                     $rowval = $client_count;
                                 }
-                                Tools::update_value('OPEN_SLOT_POS', $rowval);
+                                
+                                Tools::update_value(LapsController::getSlotPosCode($account_type_id), $rowval);
                                 continue;
                             }
                             else
@@ -268,10 +316,11 @@ class LapsController extends Controller
         return $lap_name;
     }
     
-    public static function getAvailableSlot($lap_no, $client_count)
+    public static function getAvailableSlot($lap_no, $client_count, $account_type_id)
     {
         $model = new LapModel();
         $model->lap_no = LapsController::getLapName($lap_no);
+        $model->account_type_id = $account_type_id;
         $result = $model->getLapNoInfo();
                 
         $row_update = array();
@@ -308,6 +357,58 @@ class LapsController extends Controller
         
         
         
+    }
+    
+    public function actionTable()
+    {
+        $model = new RegistrationForm();
+        $clients = new Clients();
+        $lap_no = "";
+        
+        if(isset($_GET))
+        {
+            $clients->account_id = $_GET['id'];
+            $lap_no = $_GET['lap_no'];
+            
+        }
+                        
+        $client_info = $clients->getClientInfo();
+        $clients->account_type_id = $client_info['account_type_id'];
+        
+        switch($client_info['account_type_id'])
+        {
+            case 5: $account_type = 'Jump Start';break;
+            case 6: $account_type = 'Main Turbo';break;
+            case 7: $account_type = 'VIP Nitro';break;
+        }
+                   
+        $this->render('_table',array(
+            'clients'=>$clients,
+            'client_info'=>$client_info,
+            'account_type'=>$account_type,
+            'lap_no'=>$lap_no,
+            'model'=>$model,
+        ));
+    }
+    
+    public static function getSlotPos($account_type_id)
+    {
+        switch($account_type_id)
+        {
+            case 5: return Tools::get_value('JS_SLOT_POS');
+            case 6: return Tools::get_value('MT_SLOT_POS');
+            case 7: return Tools::get_value('VN_SLOT_POS');
+        }
+    }
+    
+    public static function getSlotPosCode($account_type_id)
+    {
+        switch($account_type_id)
+        {
+            case 5: return 'JS_SLOT_POS';
+            case 6: return 'MT_SLOT_POS';
+            case 7: return 'VN_SLOT_POS';
+        }
     }
     
 }
