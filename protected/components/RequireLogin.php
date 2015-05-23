@@ -24,6 +24,7 @@ class RequireLogin extends CBehavior
             'accounts/reset',
             'accounts/activate',
             'cron/autocomplete',
+            'fix/requeue',
         );
         if (Yii::app()->user->isGuest && !in_array($controller, $allowed))
         {

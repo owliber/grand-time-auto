@@ -216,6 +216,32 @@ class Clients extends CFormModel
         $result = $command->queryAll();
         return $result;
     }
+    
+    public function getClientListByDate()
+    {
+        $conn = $this->_conn;
+        $sql = "SELECT
+                    a.account_id,
+                    a.sponsor_id,
+                    a.referrer_id,
+                    CASE a.account_type_id WHEN 5 THEN 'Jump Start' WHEN 6 THEN 'Main Turbo' WHEN 7 THEN 'VIP Nitro' END race_type,
+                    a.account_code,
+                    CONCAT(COALESCE(ad.last_name, ''), ' ', COALESCE(ad.first_name, '')) AS account_name,
+                    a.date_created
+                  FROM accounts a
+                    INNER JOIN account_details ad
+                      ON a.account_id = ad.account_id
+                    LEFT OUTER JOIN payouts p
+                      ON a.account_id = p.account_id
+                    LEFT OUTER JOIN job_queues jq
+                      ON a.account_id = jq.account_id
+                  WHERE a.date_created >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+                  AND p.account_id IS NULL
+                  AND jq.account_id IS NULL;";
+        $command = $conn->createCommand($sql);
+        $result = $command->queryAll();
+        return $result;
+    }
 }
 
 
