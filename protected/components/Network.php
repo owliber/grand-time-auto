@@ -122,16 +122,11 @@ class Network extends Controller
         return $finalTree;
     }
     
-    public static function getLapCount($lap_no)
+    public static function getLapCount($lap_no,$account_type_id)
     {
         $model = new LapModel();
-        $model->lap_no = $lap_no;
-        switch($model->lap_no)
-        {
-            case 1: $model->lap_no = 'lap_one';break;
-            case 2: $model->lap_no = 'lap_two';break;
-            case 3: $model->lap_no = 'lap_three';break;
-        }
+        $model->account_type_id = $account_type_id;
+        $model->lap_no = LapsController::getLapName($lap_no);
         $result = $model->getLapNoInfo();
         return count($result);
     }
@@ -169,18 +164,13 @@ class Network extends Controller
     
     public static function showNetwork($account_id, $account_type_id, $lap_no, $pos1, $pos2, $is_base = false, $is_form = false)
     {
-        switch($account_type_id)
-        {
-            case 5: $view = "jumpstart"; break;
-            case 6: $view = "main"; break;
-            case 7: $view = "vip"; break;
-        }
-//        switch($lap_no)
+//        switch($account_type_id)
 //        {
-//            case 1: ($is_form) ? $view = "jumpstart" : $view = "first";break;
-//            case 2: $view = "second"; break;
-//            case 3: $view = "third"; break;
+//            case 5: $view = "jumpstart"; break;
+//            case 6: $view = "main"; break;
+//            case 7: $view = "vip"; break;
 //        }
+        $view = 'index';
         
         if(Network::getClientCount($account_id)>0)
         {
@@ -196,7 +186,8 @@ class Network extends Controller
                 {
                     $link = TbHtml::link($rawData[0]['account_code'], 
                                 array($view,
-                                    'id'=> $rawData[0]['client_id'] 
+                                    'id'=> $rawData[0]['client_id'],
+                                    'atid'=>$account_type_id,
                         ));
                     $cssClass = "";
                     $client_name = $rawData[0]['client_name'];
@@ -209,7 +200,8 @@ class Network extends Controller
                     {
                         $link = TbHtml::link($result[0]['account_code'], 
                                 array($view,
-                                    'id'=> $result[0]['client_id'] 
+                                    'id'=> $result[0]['client_id'],
+                                    'atid'=>$account_type_id,
                         ));
                         
                         $client_id = $result[0]['client_id'];
@@ -326,8 +318,6 @@ class Network extends Controller
             $cssClass = "empty-gray";
             $label = '&nbsp;';
             $client_id = null;
-            
-                
         }
         
         $array = array('label'=>$label,'client_id'=>$client_id,'cssClass'=>$cssClass);
