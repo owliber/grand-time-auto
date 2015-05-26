@@ -10,11 +10,6 @@ $this->pageTitle= 'GTA Admin Portal';
     'class'=>'second span-9'
 )); ?>
 
-<?php
-$lap1_js = Tools::get_value('LAP1_JS_TOTAL');
-$lap2_js = Tools::get_value('LAP2_JS_TOTAL');
-$lap3_js = Tools::get_value('LAP3_JS_TOTAL');
-?>
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script type="text/javascript">
     google.load("visualization", "1", {packages:["corechart"]});
@@ -22,9 +17,9 @@ $lap3_js = Tools::get_value('LAP3_JS_TOTAL');
     function drawChart() {
       var data = google.visualization.arrayToDataTable([
         ['Laps', 'Jump Start', 'Main Turbo','VIP Nitro'],
-        ['Lap 1', <?php echo $lap1_js; ?>,1,1],
-        ['Lap 2', <?php echo $lap2_js; ?>,0,0],
-        ['Lap 3', <?php echo $lap3_js; ?>,0,0]
+        ['Lap 1', <?php echo $stats['JS1'].','.$stats['MT1'].','.$stats['VN1']; ?>],
+        ['Lap 2', <?php echo $stats['JS2'].','.$stats['MT2'].','.$stats['VN2']; ?>],
+        ['Lap 3', <?php echo $stats['JS3'].','.$stats['MT3'].','.$stats['VN3']; ?>]
       ]);
 
       var view = new google.visualization.DataView(data);
@@ -41,26 +36,28 @@ $lap3_js = Tools::get_value('LAP3_JS_TOTAL');
             subtitle: 'Total clients per package/laps',
         },
         height: 300,
-        width: 900,
-        bar: {groupWidth: "75%"},
-        //legend: { position: "none" },
-//        series: {
-//            0: { axis: 'clients' }, // Bind series 0 to an axis named 'clients'.
-//            1: { axis: 'laps' } // Bind series 1 to an axis named 'laps'.
-//          },
-//        axes: {
-//            x: {
-//              clients: {label: 'Total Clients'}, // Left y-axis.
-//              laps: {side:'bottom',label: 'Laps'}
-//            }
-//          }
+        vAxis: {
+            title: "Total Client Count"
+        },
+//        chartArea: {
+//            left: "25%",
+//            top: "3%",
+//            height: "80%",
+//            width: "100%"
+//        }
+//        hAxis: {
+//            title: "Laps"
+//        }
+        //width: '100%',
+        //bar: {groupWidth: "75%"},
+        //legend: { position: "none" }
       };
       var chart = new google.visualization.ColumnChart(document.getElementById("columnchart_values"));
       chart.draw(view, options);
   }
   </script>
 <div class="clearfix"></div>
-<div id="columnchart_values"></div>
+<div id="columnchart_values" class="chart"></div>
 <div class="clearfix"></div>
 <?php echo TbHtml::alert(TbHtml::ALERT_COLOR_SUCCESS, 'Total Payouts<br /> <strong>P'.$total['total_net_pay'].'</strong>',array(
     'class'=>'last span-5'
