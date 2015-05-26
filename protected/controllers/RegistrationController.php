@@ -22,50 +22,36 @@ class RegistrationController extends Controller
         $reference = new ReferenceModel();
         $param = array('package_name'=>'','url'=>'');
         
+        if(isset($_GET['atid']) && !empty($_GET['atid']))
+        {
+            $atid = $_GET['atid'];
+            $valid_atid = array(5,6,7);
+        }
+        else
+        {
+            throw new CHttpException('Invalid Access');
+        }
+        
         if(isset($_POST['RegistrationForm']))
         {
             $model->attributes = $_POST['RegistrationForm'];
             $clients->account_id = $model->client_id;
+            
         }
         else
         {
             if(isset($_GET['id']))
             {
                 $account_id = $_GET['id'];
-                $account_type_id = $_GET['atid'];
                 $clients->account_id = $account_id;
             }
             else
             {
-                if(isset($_GET['atid']))
+                
+                if(in_array($atid, $valid_atid))
                 {
-                    $atid = $_GET['atid'];
-                    $valid_atid = array(5,6,7);
-                    if(in_array($atid, $valid_atid))
-                    {
-                        switch($_GET['atid'])
-                        {
-                            case 5: 
-                                $base_id = 'JS_BASE_ACCOUNT_ID'; 
-                                $param['package_name'] = 'Jump Start';
-                                break;
-                            case 6: 
-                                $base_id = 'MT_BASE_ACCOUNT_ID'; 
-                                $param['package_name'] = 'Main Turbo';
-                                break;
-                            case 7: 
-                                $base_id = 'VN_BASE_ACCOUNT_ID'; 
-                                $param['package_name'] = 'VIP Nitro';
-                                break;
-                        }
-                        $param['url'] = Yii::app()->createAbsoluteUrl('registration/index', array('atid'=>$atid));
-                        $clients->account_id = $reference->get_variable_value($base_id);
-                    }
-                    else
-                    {
-                        throw new CHttpException('Invalid request');
-                    }
-                    
+                    $base_id = LapsController::getBaseID($atid);                    
+                    $clients->account_id = $reference->get_variable_value($base_id);
                 }
                 else
                 {
@@ -75,6 +61,9 @@ class RegistrationController extends Controller
             }
             
         }
+                
+        $param['package_name'] = LapsController::getPackageName($atid);
+        $param['url'] = Yii::app()->createAbsoluteUrl('registration/index', array('atid'=>$atid));
 
         $model->account_id = $clients->account_id;
         $client_info = $clients->getClientInfo();

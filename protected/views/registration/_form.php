@@ -27,7 +27,7 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
 ));
 ?>
 
-<?php $this->renderPartial('_test',array('model'=>$model,'clients'=>$clients)); ?>
+<?php //$this->renderPartial('_test',array('model'=>$model,'clients'=>$clients)); ?>
 
 <?php echo TbHtml::hiddenField('RegistrationForm[pos]','',array('id'=>'RegistrationForm_pos')); ?>
 <?php echo TbHtml::hiddenField('RegistrationForm[account_id]','',array('id'=>'RegistrationForm_account_id')); ?>

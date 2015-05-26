@@ -420,6 +420,16 @@ class LapsController extends Controller
         }
     }
     
+    public static function getBaseID($account_type_id)
+    {
+        switch($account_type_id)
+        {
+            case 5: return 'JS_BASE_ACCOUNT_ID';
+            case 6: return 'MT_BASE_ACCOUNT_ID';
+            case 7: return 'VN_BASE_ACCOUNT_ID';
+        }
+    }
+    
 }
 
 
