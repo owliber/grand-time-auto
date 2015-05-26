@@ -142,8 +142,12 @@ class AccountCodesModel extends CFormModel
     public function getCode()
     {
         $conn = $this->_conn;
-        $sql = "SELECT account_code FROM account_codes WHERE status = 0 and account_code LIKE 'JS%' LIMIT 1";
+        $sql = "SELECT ac.account_code FROM account_codes ac
+                INNER JOIN account_code_batches acb ON ac.code_batch_id = acb.code_batch_id
+                WHERE ac.status = 0 
+                AND acb.account_type_id = :account_type_id LIMIT 1";
         $command = $conn->createCommand($sql);
+        $command->bindParam(':account_type_id', $this->account_type_id);
         $result = $command->queryRow();
         return $result['account_code'];
     }
