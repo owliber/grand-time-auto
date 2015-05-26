@@ -15,10 +15,76 @@ class RegistrationController extends Controller
     
     public function actionIndex()
     {
-        $model = new RegistrationForm();
+        $this->initialize();
         
+        $model = new RegistrationForm();
+        $clients = new Clients();
+        $reference = new ReferenceModel();
+        $param = array('package_name'=>'','url'=>'');
+        
+        if(isset($_POST['RegistrationForm']))
+        {
+            $model->attributes = $_POST['RegistrationForm'];
+            $clients->account_id = $model->client_id;
+        }
+        else
+        {
+            if(isset($_GET['id']))
+            {
+                $account_id = $_GET['id'];
+                $account_type_id = $_GET['atid'];
+                $clients->account_id = $account_id;
+            }
+            else
+            {
+                if(isset($_GET['atid']))
+                {
+                    $atid = $_GET['atid'];
+                    $valid_atid = array(5,6,7);
+                    if(in_array($atid, $valid_atid))
+                    {
+                        switch($_GET['atid'])
+                        {
+                            case 5: 
+                                $base_id = 'JS_BASE_ACCOUNT_ID'; 
+                                $param['package_name'] = 'Jump Start';
+                                break;
+                            case 6: 
+                                $base_id = 'MT_BASE_ACCOUNT_ID'; 
+                                $param['package_name'] = 'Main Turbo';
+                                break;
+                            case 7: 
+                                $base_id = 'VN_BASE_ACCOUNT_ID'; 
+                                $param['package_name'] = 'VIP Nitro';
+                                break;
+                        }
+                        $param['url'] = Yii::app()->createAbsoluteUrl('registration/index', array('atid'=>$atid));
+                        $clients->account_id = $reference->get_variable_value($base_id);
+                    }
+                    else
+                    {
+                        throw new CHttpException('Invalid request');
+                    }
+                    
+                }
+                else
+                {
+                    throw new CHttpException('Invalid request');
+                }
+                
+            }
+            
+        }
+
+        $model->account_id = $clients->account_id;
+        $client_info = $clients->getClientInfo();
+        $clients->account_type_id = $client_info['account_type_id'];
+
         $this->render('index',array(
+            'client_info'=>$client_info,
+            'clients'=>$clients,
             'model'=>$model,
+            'param'=>$param
         ));
     }
     
@@ -157,13 +223,18 @@ class RegistrationController extends Controller
                 Mailer::sendAccountInfo($params);
                 
             }
+            
+            //Redirect to url
+            $url = Yii::app()->createUrl('registration/index', array('id'=>$model->account_id,'atid'=>$model->account_type_id));
+//            
             echo CJSON::encode(array(
-                  'result_code'=>$result['result_code'],
-                  'result_msg'=>$result['result_msg'],
-                  'redirect'=>$_POST['redirect'],
+                'result_code'=>$result['result_code'],
+                'result_msg'=>$result['result_msg'],
+//                'redirect'=>$_POST['redirect'],
+                'url'=>$url,
              ));
+            
             Yii::app()->end();
-
 
         }
         else
