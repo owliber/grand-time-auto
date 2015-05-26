@@ -30,6 +30,7 @@ class SiteController extends Controller
             $this->layout = 'column2';
             
             $model = new PayoutModel();
+            $stats = array();
             
             if(Yii::app()->user->isClient())
             {
@@ -41,6 +42,19 @@ class SiteController extends Controller
             }
             else
             {
+                //Get current statistics
+                $stats['JS1'] = Tools::get_value('LAP1_JS_TOTAL');
+                $stats['JS2'] = Tools::get_value('LAP2_JS_TOTAL');
+                $stats['JS3'] = Tools::get_value('LAP3_JS_TOTAL');
+
+                $stats['MT1'] = Tools::get_value('LAP1_MT_TOTAL');
+                $stats['MT2'] = Tools::get_value('LAP2_MT_TOTAL');
+                $stats['MT3'] = Tools::get_value('LAP3_MT_TOTAL');
+
+                $stats['VN1'] = Tools::get_value('LAP1_VN_TOTAL');
+                $stats['VN2'] = Tools::get_value('LAP2_VN_TOTAL');
+                $stats['VN3'] = Tools::get_value('LAP3_VN_TOTAL');
+                
                 $total = $model->getPayoutTotal();
                 $view = 'index';
             }
@@ -50,6 +64,7 @@ class SiteController extends Controller
             $this->render($view,array(
                 'lastLogin'=>$lastLogin,
                 'total'=>$total,
+                'stats'=>$stats,
             ));
             
 	}
