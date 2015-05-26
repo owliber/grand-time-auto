@@ -15,7 +15,7 @@ echo TbHtml::alert(TbHtml::ALERT_COLOR_DANGER, 'Please fill-up all required fiel
 <?php
 $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
     'layout' => TbHtml::FORM_LAYOUT_HORIZONTAL,
-    'id'=>'jumpstart-form',
+    'id'=>'registration-form',
     'enableAjaxValidation' => true,
      'enableClientValidation' => true,
      'clientOptions' => array(
@@ -27,7 +27,7 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
 ));
 ?>
 
-<?php //$this->renderPartial('_test',array('model'=>$model)); ?>
+<?php $this->renderPartial('_test',array('model'=>$model,'clients'=>$clients)); ?>
 
 <?php echo TbHtml::hiddenField('RegistrationForm[pos]','',array('id'=>'RegistrationForm_pos')); ?>
 <?php echo TbHtml::hiddenField('RegistrationForm[account_id]','',array('id'=>'RegistrationForm_account_id')); ?>
@@ -38,7 +38,7 @@ $form = $this->beginWidget('bootstrap.widgets.TbActiveForm', array(
 <?php echo $form->textFieldControlGroup($model,'account_code'); ?>
 <?php echo $form->textFieldControlGroup($model, 'email',array('class'=>'span-8')); ?>
 <?php echo $form->hiddenField($model, 'referrer_id'); ?>
-<?php echo TbHtml::hiddenField('redirect', isset($_GET['id']) ? true : false) ?>
+<?php //echo TbHtml::hiddenField('redirect', isset($_GET['id']) ? true : false) ?>
 <div class="control-group">
     <?php echo TbHtml::label('Sponsor <span class="required">*</span>', 'referrer_name',array('class'=>'control-label required')); ?>
     <div class="controls">
