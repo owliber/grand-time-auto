@@ -22,13 +22,7 @@ class LapsController extends Controller
         if(isset($_POST['LapModel']))
         {
             $model->attributes = $_POST['LapModel'];
-            switch($model->lap_no)
-            {
-                case 1: $lap_table = 'lap_one';break;
-                case 2: $lap_table = 'lap_two';break;
-                case 3: $lap_table = 'lap_three';break;
-            }
-            $model->lap_table = $lap_table;
+            $model->lap_table = LapsController::getLapName($model->lap_no);
             
             if($model->validate())
             {
@@ -84,11 +78,13 @@ class LapsController extends Controller
         
         $client_info = $clients->getClientInfo();
         $clients->account_type_id = $client_info['account_type_id'];
+        $package = LapsController::getPackageName($clients->account_type_id);
                    
         $this->render('_first',array(
             'clients'=>$clients,
             'client_info'=>$client_info,
             'model'=>$model,
+            'package'=>$package,
         ));
     }
     
@@ -153,11 +149,13 @@ class LapsController extends Controller
         
         $client_info = $clients->getClientInfo();
         $clients->account_type_id = $client_info['account_type_id'];
+        $package = LapsController::getPackageName($clients->account_type_id);
                    
         $this->render($view,array(
             'clients'=>$clients,
             'client_info'=>$client_info,
             'model'=>$model,
+            'package'=>$package,
         ));
         
     }
@@ -204,11 +202,13 @@ class LapsController extends Controller
                 
         $client_info = $clients->getClientInfo();
         $clients->account_type_id = $client_info['account_type_id'];
+        $package = LapsController::getPackageName($clients->account_type_id);
                    
         $this->render($view,array(
             'clients'=>$clients,
             'client_info'=>$client_info,
             'model'=>$model,
+            'package'=>$package
         ));
         
     }
@@ -222,13 +222,11 @@ class LapsController extends Controller
         $clients->account_id = $account_id;
         $clientinfo = $clients->getClientInfo();
         $account_type_id = $clientinfo['account_type_id'];
+        
         switch($lap_no)
         {
-            case 1: 
-                $laps->insertLap($lap_no);
-                break;
             default:
-                $lap_count = Network::getLapCount($lap_no);
+                $lap_count = Network::getLapCount($lap_no,$account_type_id);
                 //Check if first account set sponsor_id and position to null
 
                 if($lap_count == 0)
@@ -239,6 +237,7 @@ class LapsController extends Controller
                 elseif($lap_count == 1 || $lap_count == 2  )
                 {
                     $laps->lap_no = LapsController::getLapName($lap_no);
+                    $laps->account_type_id = $account_type_id;
                     $info = $laps->getBaseAccount();
                     $sponsor_id = $info[0]['client_id'];
                     $lap_count == 1 ? $pos = 0 : $pos = 1;
@@ -408,6 +407,16 @@ class LapsController extends Controller
             case 5: return 'JS_SLOT_POS';
             case 6: return 'MT_SLOT_POS';
             case 7: return 'VN_SLOT_POS';
+        }
+    }
+    
+    public static function getPackageName($account_type_id)
+    {
+        switch($account_type_id)
+        {
+            case 5: return 'Jump Start';
+            case 6: return 'Main Turbo';
+            case 7: return 'VIP Nitro';
         }
     }
     
