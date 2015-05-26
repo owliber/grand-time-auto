@@ -60,16 +60,10 @@ class LapModel extends CFormModel
     }
     
     public function insertLap($lap_no)
-    {
-        switch($lap_no)
-        {
-            case 1: $lap_no = 'lap_one'; break;
-            case 2: $lap_no = 'lap_two'; break;
-            case 3: $lap_no = 'lap_three'; break;
-        }
-        
+    {        
+        $lap_table = LapsController::getLapName($lap_no);
         $conn = $this->_conn;
-        $sql = "INSERT INTO $lap_no (client_id, sponsor_id, pos)
+        $sql = "INSERT INTO $lap_table (client_id, sponsor_id, pos)
                  VALUES (:client_id, :sponsor_id, :pos);";
         $command = $conn->createCommand($sql);
         $command->bindParam(':client_id', $this->new_account_id);
@@ -94,7 +88,13 @@ class LapModel extends CFormModel
     public function getBaseAccount()
     {
         $conn = $this->_conn;
-        $sql = "SELECT * FROM $this->lap_no WHERE sponsor_id IS NULL";
+        $sql = "SELECT
+                *
+              FROM lap_one l
+                INNER JOIN accounts a
+                  ON l.client_id = a.account_id
+              WHERE l.sponsor_id IS NULL
+              AND a.account_type_id = :account_type_id;";
         $command = $conn->createCommand($sql);
         return $command->queryAll();
     }
