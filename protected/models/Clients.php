@@ -209,8 +209,7 @@ class Clients extends CFormModel
                 lo.pos
               FROM $lap_no lo
                 INNER JOIN accounts a ON lo.client_id = a.account_id
-              WHERE lo.sponsor_id = :account_id
-                ORDER BY tree_id;";
+              WHERE lo.sponsor_id = :account_id;";
         $command = $conn->createCommand($sql);
         $command->bindParam(':account_id',$this->account_id);
         $result = $command->queryAll();
