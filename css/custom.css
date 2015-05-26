@@ -48,3 +48,6 @@
 }
 .payout-details th {width: 40%; text-align:  left; font-weight: 100;}
 .subtitle {font-size:11px; color:#000;}
+.chart{
+    width: 100%; 
+}
