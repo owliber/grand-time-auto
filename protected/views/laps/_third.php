@@ -10,7 +10,7 @@
  
 <?php
 Yii::app()->user->setFlash(TbHtml::ALERT_COLOR_WARNING,
-    '<strong>Jump Start </strong> &mdash; '. TbHtml::icon(TbHtml::ICON_FLAG) . '3rd Lap');
+    TbHtml::icon(TbHtml::ICON_FLAG) . ' <strong>'.$package.' </strong> &mdash; 3rd Lap');
 ?>
 <?php $this->widget('bootstrap.widgets.TbAlert', array(
     'block'=>true,
