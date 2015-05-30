@@ -166,7 +166,7 @@ class RegistrationController extends Controller
             switch ($account_type_id)
             {
                 case 5: $header = "<h4>Jump Start Registration</h4>"; break;
-                case 6: $header = "<h4>Main Turbo Registraiton</h4>"; break;
+                case 6: $header = "<h4>Main Turbo Registration</h4>"; break;
                 case 7: $header = "<h4>VIP Nitro Registration</h4>"; break;
             }
             
@@ -215,7 +215,7 @@ class RegistrationController extends Controller
             
             //Redirect to url
             $url = Yii::app()->createUrl('registration/index', array('id'=>$model->account_id,'atid'=>$model->account_type_id));
-//            
+
             echo CJSON::encode(array(
                 'result_code'=>$result['result_code'],
                 'result_msg'=>$result['result_msg'],
