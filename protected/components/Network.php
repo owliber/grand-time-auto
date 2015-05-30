@@ -95,7 +95,7 @@ class Network extends Controller
                         );
     }
     
-    public static function getNetworkCount($account_id, $lap_no, $level = 0)
+    public static function getNetworkCount($account_id, $lap_no, $level = 0, $level_limit = 2)
     {
         $model = new Clients();
         $model->account_id = $account_id;
@@ -106,13 +106,13 @@ class Network extends Controller
         $i = 0;
         $level++;
         
-        if ($level <= 2)
+        if ($level <= $level_limit)
         {
             $downlines = $model->getDownlines();
             foreach ($downlines as $key => $val)
             {
                 $parent[$i][$level] = $downlines[$key]["client_id"];
-                $children = array_merge($children, Network::getNetworkCount($downlines[$key]["client_id"], $lap_no, $level));
+                $children = array_merge($children, Network::getNetworkCount($downlines[$key]["client_id"], $lap_no, $level, $level_limit));
                 $i++;
             }
         }
