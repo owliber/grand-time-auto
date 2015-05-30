@@ -91,6 +91,8 @@ class RegistrationForm extends CFormModel
         $conn = $this->_conn;
         $model = new LapModel();
         $job = new Jobs();
+        $isNewPayout = false;
+        $isExitPayout = false;
         
         $trx = $conn->beginTransaction();
         $sql = "INSERT INTO accounts (account_code,account_type_id,sponsor_id,referrer_id, password, created_by) "
@@ -122,6 +124,10 @@ class RegistrationForm extends CFormModel
         $network = Network::getNetworkCount($this->account_id,1);
         $table_count = count($network);
         
+        //Get level 1 downlines (A & B) if already complete to activate payout
+        $base_downline = Network::getNetworkCount($this->account_id, 1, 0, 1);
+        $base_downline_count = count($base_downline);
+        
         //Get reference records
         $ref_table_count = Tools::get_value('TOTAL_TABLE_CLIENT_PER_ACCOUNT');
         $ref_client_count = Tools::get_value('CLIENT_PER_ACCOUNT');
@@ -132,60 +138,84 @@ class RegistrationForm extends CFormModel
         $job->client_id = $this->new_account_id;
         $job->table_count = $table_count;
         
+       
+        //if($table_count <= $ref_table_count && $client_count <= $ref_client_count)
+        //if($table_count <= $ref_table_count && $client_count <= $ref_client_count && $base_downline_count == $ref_min_client)
+        if($base_downline_count == $ref_client_count && $table_count <= $ref_table_count)
+        {
+
+            switch($table_count)
+            {
+                case $ref_table_count: //6
+                    $job->insert_queue();
+                    $isNewPayout = true;
+                    $isExitPayout = true;
+                    break;
+                case 3:
+                case 4:
+                    $payout = new PayoutModel();
+                    $payout->lap_no = 1;
+                    $payout->head_count = $ref_min_client;
+                    $payout->account_id = $this->account_id;
+
+                    //Check if client has no payout yet for lap 1
+                    if(!$payout->hasPayout())
+                    {
+                        $job->insert_queue();
+                        $isNewPayout = true;
+                    }
+                    break;
+            }
+        }
+
+        if($table_count == $ref_table_count)
+        {
+            $result_code = 1;
+            $result_msg = 'The maximum slot for this table is already full.';
+        }
+
+        if($client_count == $ref_client_count)
+        {
+            $result_code = 2;
+            $result_msg = 'This account has already (2) registered clients.';
+        }
+
         try
         {
-            if($table_count <= $ref_table_count && $client_count <= $ref_client_count)
+            $trx->commit();
+            //Increment total client for lap 1 network
+            Tools::add_client_count($this->account_type_id, 1);
+            Tools::log(6, $this->account_code, 1);  
+            
+            $result_code = 0;
+            if($isNewPayout)
             {
-                switch($table_count)
-                {
-                    case $ref_table_count:
-                    case $ref_min_client:
-                        $job->insert_queue();
-                        break;
-                }
+                if($isExitPayout)
+                    $payout_msg = ' An Exit bonus has been queued for processing.';
+                else
+                    $payout_msg = ' A new payout has been queued for processing.';
                 
-                $trx->commit();
-                //Increment total client for lap 1 network
-                Tools::add_client_count($this->account_type_id, 1);
-                Tools::log(6, $this->account_code, 1);                                
-                return array(
-                    'result_code'=>0,
-                    'result_msg'=>'You have successfully registered the account.',
-                );
+                $result_msg = 'You have successfully registered the account.'.$payout_msg;
             }
             else
             {
-                $trx->rollback();
-                Tools::log(6, $this->account_code, 2);
-                
-                if($table_count == $ref_table_count)
-                {
-                    $result_code = 1;
-                    $result_msg = 'The maximum slot for this table is already full.';
-                }
-                
-                if($client_count == $ref_client_count)
-                {
-                    $result_code = 2;
-                    $result_msg = 'This account has already (2) registered clients.';
-                }
-                                
-                return array(
-                    'result_code'=>$result_code,
-                    'result_msg'=>$result_msg,
-                );
+                $result_msg = 'You have successfully registered the account.';
             }
             
         } catch (Exception $ex) {
             $trx->rollback();
             Tools::log(6, $ex->getMessage(), 2);
             
-            return array(
-                'result_code'=>3,
-                'result_msg'=>'A problem was encountered while processing. Please contact IT.',
-            );
+            $result_code = 3;
+            $result_msg = 'A problem was encountered while processing. Please contact IT.';
+           
         }
         
+        return array(
+            'result_code'=>$result_code,
+            'result_msg'=>$result_msg,
+        );
+
     }
     
     public function insertDetails()
