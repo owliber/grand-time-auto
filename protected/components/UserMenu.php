@@ -37,7 +37,7 @@ class UserMenu extends Controller
                         }
                         else
                         {
-                            $url = array($submenu['submenu_link']);
+                            $url = array($submenu['submenu_link'] . $submenu['params']);
                             $linkOptions = array();
                         }
 
@@ -57,7 +57,7 @@ class UserMenu extends Controller
                 }
                 else
                 {
-                    $menu_url = array($menu['menu_link']);
+                    $menu_url = array($menu['menu_link'] . $menu['params']);
                     $menuLinkOptions = array();
                 }
 
@@ -73,7 +73,6 @@ class UserMenu extends Controller
         }
         else
         {
-
 
             $menus = $model->getMenus();
 
@@ -95,7 +94,7 @@ class UserMenu extends Controller
                         }
                         else
                         {
-                            $url = array($submenu['submenu_link']);
+                            $url = array($submenu['submenu_link'] . $submenu['params']);
                             $linkOptions = array();
                         }
                         
@@ -115,7 +114,7 @@ class UserMenu extends Controller
                 }
                 else
                 {
-                    $menu_url = array($menu['menu_link']);
+                    $menu_url = array($menu['menu_link'] . $menu['params']);
                     $menuLinkOptions = array();
                 }
                 

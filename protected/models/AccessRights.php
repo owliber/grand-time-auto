@@ -61,7 +61,8 @@ class AccessRights extends CFormModel
                       m.menu_icon,
                       ar.default_menu_id,
                       m.is_url,
-                      m.status
+                      m.status,
+                      m.params
                     FROM access_rights ar
                       INNER JOIN menus m
                         ON ar.menu_id = m.menu_id
@@ -88,7 +89,8 @@ class AccessRights extends CFormModel
                   sm.submenu_name,
                   sm.submenu_link,
                   sm.is_url,
-                  sm.status
+                  sm.status,
+                  sm.params
                 FROM access_rights ar
                   INNER JOIN submenus sm
                     ON ar.submenu_id = sm.submenu_id
@@ -116,7 +118,8 @@ class AccessRights extends CFormModel
                 m.menu_link,
                 m.menu_icon,
                 m.is_url,
-                m.status
+                m.status,
+                m.params
               FROM menus m
               WHERE m.status = 1
               ORDER BY sort_order;";
@@ -137,7 +140,8 @@ class AccessRights extends CFormModel
                 sm.submenu_name,
                 sm.submenu_link,
                 sm.is_url,
-                sm.status
+                sm.status,
+                sm.params
               FROM submenus sm
                 INNER JOIN menus m
                   ON sm.menu_id = m.menu_id
