@@ -89,12 +89,25 @@ class CronController extends Controller
             if(isset($_GET['render']) && !empty($_GET['render']))
             {
                $model = new Jobs();
-               $retval = $this->actionAutocomplete();
+               $this->PIDFile = 'Autocomplete.PID';
                $model->cron_id = 1;
+               
+               if(!$this->PID_exists())
+               {
+                    $retval = $this->actionAutocomplete();
+                    $retcode = 0;
+               }
+               else
+               {
+                   $retcode = 1;
+                   $retval = 'Scheduled job is currently running, please try again later.';
+               }
+               
                $lastrun = $model->get_last_run();
+              
             }
             
-            echo CJSON::encode(array('retval'=>$retval,'lastrun'=>$lastrun));
+            echo CJSON::encode(array('retval'=>$retval,'retcode'=>$retcode,'lastrun'=>$lastrun));
         }
     }
         
@@ -121,6 +134,7 @@ class CronController extends Controller
                 switch($table_count)
                 {
                     case $ref_min_client: //Generate first payout
+                    case 4://Possible total number of clients if base downlines are not yet filled.
                         $payout_code = $this->get_payout_code($account_type_id, $ref_min_client, $lap_no);
                         PayoutController::generatePayout($payout_code, $account_id);
                         break;
