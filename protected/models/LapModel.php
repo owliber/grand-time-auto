@@ -96,6 +96,7 @@ class LapModel extends CFormModel
               WHERE l.sponsor_id IS NULL
               AND a.account_type_id = :account_type_id;";
         $command = $conn->createCommand($sql);
+        $command->bindParam(':account_type_id',$this->account_type_id);
         return $command->queryAll();
     }
     
