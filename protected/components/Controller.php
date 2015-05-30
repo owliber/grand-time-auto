@@ -32,7 +32,7 @@ class Controller extends CController
         
         public function initialize()
         {
-          if(!Yii::app()->user->hasAccess() && !Yii::app()->user->isAdmin()) 
+          if(!Yii::app()->user->hasAccess() && !Yii::app()->user->isAdmin())
           {
               $url = urlencode("http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]");
               $this->redirect(array('site/invalid','url'=>$url), true) ;
