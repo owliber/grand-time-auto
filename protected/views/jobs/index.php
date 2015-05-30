@@ -15,6 +15,11 @@ echo TbHtml::ajaxButton('Process Jobs', array('/cron/process'), array(
             'success'=>'function(data){
                 //$("#ajax-loader").hide(); 
                 //alert(data);
+                if(data.retcode == 1)
+                {
+                    alert(data.retval);
+                }
+                
                 $("#last_run_date").text("Last Job Run: "+data.lastrun);
                 $.fn.yiiGridView.update("queue-grid");
             }',
