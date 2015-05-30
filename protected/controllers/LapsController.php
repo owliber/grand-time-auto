@@ -15,29 +15,38 @@ class LapsController extends Controller
     
     public function actionIndex()
     {
+        $this->initialize();
+        
         $model = new LapModel();
         $result = array();
         $newrows = array();
         
         if(isset($_POST['LapModel']))
         {
+            if(isset(Yii::app()->session['LapModel'])) unset(Yii::app()->session['LapModel']);
             $model->attributes = $_POST['LapModel'];
+            Yii::app()->session['LapModel'] = $model->attributes;
+        }
+        
+        if(isset(Yii::app()->session['LapModel']) && !isset($_POST['LapModel']))
+        {
+            $model->attributes = Yii::app()->session['LapModel'];
+        }        
+         
+        if($model->validate())
+        {
             $model->lap_table = LapsController::getLapName($model->lap_no);
-            
-            if($model->validate())
+            $result = $model->getLapResults();
+
+            foreach($result as $key=>$val)
             {
-                $result = $model->getLapResults();
-                
-                foreach($result as $key=>$val)
-                {
-                    $rows = $val;
-                    $clients = Network::getNetworkCount($val['account_id'], $val['lap_no']);
-                    $rows['total_clients'] = count($clients);
-                    $newrows[] = $rows;
-                }
-                $result = $newrows;
+                $rows = $val;
+                $clients = Network::getNetworkCount($val['account_id'], $val['lap_no']);
+                $rows['total_clients'] = count($clients);
+                $newrows[] = $rows;
             }
             
+            $result = $newrows;
         }
         
         $dataProvider = new CArrayDataProvider($result,array(
@@ -227,8 +236,8 @@ class LapsController extends Controller
         {
             default:
                 $lap_count = Network::getLapCount($lap_no,$account_type_id);
+                
                 //Check if first account set sponsor_id and position to null
-
                 if($lap_count == 0)
                 {
                     $laps->sponsor_id = NULL;
@@ -360,6 +369,8 @@ class LapsController extends Controller
     
     public function actionTable()
     {
+        $this->initialize();
+        
         $model = new RegistrationForm();
         $clients = new Clients();
         $lap_no = "";
