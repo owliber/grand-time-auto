@@ -68,6 +68,54 @@ class FixController extends Controller
             ));
     }
     
+    public function actionPending()
+    {
+        $model = new Clients();
+        $lap = new LapModel();
+        
+        $clients = $model->getPendingClient();
+        $lap_no = 1;
+        $head_count = 6;
+        $newrows=array();
+                
+        foreach($clients as $client)
+        {
+            $account_id = $client['account_id'];
+            $network = Network::getNetworkCount($account_id, $lap_no);
+            
+            $table_count = count($network);
+            $model->lap_no = $lap_no;
+            $model->account_id = $account_id;
+            $model->head_count = $head_count;
+            $hasPayout = $model->checkClientWithoutPayout();
+            $lap->account_id = $account_id;
+            $lapinfo = $lap->getLapInfo();
+            $current_lap = $lapinfo[0]['lap_no'];
+            
+            if($table_count == $head_count && empty($current_lap) && $hasPayout)
+            {
+                $rows = $client;
+                $rows['lap_no'] = $lap_no;
+                $rows['total_clients'] = $table_count;
+                $newrows[] = $rows;
+                
+            }
+           
+        }
+        
+        $dataProvider = new CArrayDataProvider($newrows,array(
+                                'keyField'=>false,
+                                'pagination'=>array(
+                                    'pageSize'=>25,
+                                ),
+                            ));
+        
+        $this->render('lists',array(
+                'dataProvider'=>$dataProvider,
+                'model'=>$model,
+            ));
+    }
+    
     public function actionRequeue()
     {
         $model = new Clients();
@@ -102,6 +150,51 @@ class FixController extends Controller
            
         }
         
+    }
+    
+    public function actionQueueComplete()
+    {
+                   
+        $model = new Clients();
+        $lap = new LapModel();
+
+        $clients = $model->getPendingClient();
+        $lap_no = 1;
+        $head_count = 6;
+        $newrows=array();
+        $job = new Jobs();
+
+        foreach($clients as $client)
+        {
+            $account_id = $client['account_id'];
+            $network = Network::getNetworkCount($account_id, $lap_no);
+
+            $table_count = count($network);
+            $model->lap_no = $lap_no;
+            $model->account_id = $account_id;
+            $model->head_count = $head_count;
+            $hasPayout = $model->checkClientWithoutPayout();
+            $lap->account_id = $account_id;
+            $lapinfo = $lap->getLapInfo();
+            $current_lap = $lapinfo[0]['lap_no'];
+
+            if($table_count == $head_count && $current_lap == 1 && $hasPayout)
+            {
+                $rows = $client;
+                $rows['lap_no'] = $lap_no;
+                $rows['total_clients'] = $table_count;
+                $newrows[] = $rows;
+
+                /* Add account on the job queues */
+                $job->account_id = $account_id;
+                $job->client_id = end($network[2]);
+                if($table_count > 2 && $table_count < 6)
+                    $table_count = 3;
+                $job->table_count = $table_count;
+                $job->insert_queue();
+
+            }
+        }
     }
 }
 
