@@ -269,7 +269,7 @@ class AccountsController extends Controller {
                 
                 if(count($result)>0)
                 {
-                    $email = $result['email'];
+                    $email = $result[0]['email'];
                     //Get user info and redirect to 
                     $url = Yii::app()->createUrl('/accounts/reset', array('key'=>$model->hashkey,'email'=>$email));
                     $this->redirect($url);
