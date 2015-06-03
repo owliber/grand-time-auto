@@ -37,10 +37,20 @@ echo TbHtml::ajaxButton('Process Jobs', array('/cron/process'), array(
 echo TbHtml::button('Refresh', array(
     'onclick'=>'$.fn.yiiGridView.update("queue-grid");',
     'class'=>'pull-right',
-    'style'=>'margin:20px -10px 0 0',
+    'style'=>'margin:20px -18px 0 0',
     'color'=>  TbHtml::BUTTON_COLOR_WARNING,
 ));
 
+if(Yii::app()->user->isSuperAdmin())
+{
+    echo TbHtml::button('Add Queue', array(
+        'class'=>'pull-right',
+        'style'=>'margin:20px 2px 0 0',
+        'color'=>  TbHtml::BUTTON_COLOR_WARNING,
+        'data-toggle' => 'modal',
+        'data-target' => '#queue-form',
+    ));
+}
 echo TbHtml::labelTb('Last Job Run: '.$lastrun, array(
     'color'=>  TbHtml::LABEL_COLOR_SUCCESS,
     'style'=>'margin:25px 10px 0',
@@ -87,6 +97,34 @@ Yii::app()->user->setFlash(TbHtml::ALERT_COLOR_ERROR,
             ),
     ))
 );
-
+?>
+<?php
+    $this->widget('bootstrap.widgets.TbModal', array(
+    'id' => 'queue-form',
+    'header' => 'Add To Queue',
+    'content' => $this->renderPartial('_form', '', true),
+    'footer'=>array(
+        TbHtml::ajaxButton('Add', 'add', array(
+            'data'=>array(
+                'account_code'=>'js:function(){return $("#account_code").val()}',
+                'head_count'=>'js:function(){return $("#head_count").val()}',
+            ),
+            'type' => 'GET',
+            'dataType'=>'json',
+            'success'=>'function(data){
+                alert(data.result_msg);
+                $.fn.yiiGridView.update("queue-grid");
+                $("#queue-form").modal("hide");
+                
+            }',
+        ), array(
+            
+            'color'=>  TbHtml::BUTTON_COLOR_PRIMARY,
+            'confirm'=>'Are you sure you want to continue?',
+            'id'=>'ajaxBtnAdd',
+        )),
+        TbHtml::button('Close', array('data-dismiss' => 'modal')),
+    ),
+)); 
 
 
