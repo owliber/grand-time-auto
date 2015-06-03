@@ -240,47 +240,6 @@ class PayoutController extends Controller
         }
     }
     
-    public function actionCancelRequest()
-    {
-        if(Yii::app()->request->isAjaxRequest && isset($_GET['id']))
-        {
-            echo CJSON::encode(array('payout_id'=>$_GET['id']));
-        }
-        else
-        {
-            throw new CHttpException('Invalid request');
-        }
-    }
-    
-    public function actionCancel()
-    {
-        if(Yii::app()->request->isAjaxRequest)
-        {
-            $model = new PayoutModel();
-            $model->payout_id = $_POST['id'];
-            $model->reason = $_POST['reason'];
-            
-            $model->cancelPayout();
-            
-            if(!$model->hasErrors())
-            {
-                $result_code = 0;
-                $result_msg = 'Payout was successfully cancelled.';
-            }
-            else
-            {
-                $result_code = 1;
-                $result_msg = 'Problem encountered while cancelling the payout.';
-            }
-            
-            echo CJSON::encode(array('result_code'=>$result_code,'result_msg'=>$result_msg));
-            
-        }
-        else
-        {
-            throw new CHttpException('Invalid request');
-        }
-    }
 }
 
 

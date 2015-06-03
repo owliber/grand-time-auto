@@ -25,7 +25,6 @@ class PayoutModel extends CFormModel
     public $deduction_details;
     public $search_key;
     public $is_visible;
-    public $reason;
     
     public function __construct() {
         $this->_conn = Yii::app()->db;
@@ -467,31 +466,7 @@ class PayoutModel extends CFormModel
             Tools::log(15, $this->account_id, 1);
         } catch (Exception $ex) {
             $trx->rollback();
-            Tools::log(15, $ex->getMessage(), 2);
-        }
-            
-    }
-    
-    public function cancelPayout()
-    {
-        $conn = $this->_conn;
-        $trx = $conn->beginTransaction();
-        $this->account_id = Yii::app()->user->getUserId();
-        $sql = "UPDATE payouts SET status = 3, date_cancelled = now(), cancelled_by = :account_id, cancel_reason = :reason 
-                WHERE payout_id = :payout_id;";
-        $command = $conn->createCommand($sql);
-        $command->bindParam(':payout_id', $this->payout_id);
-        $command->bindParam(':account_id', $this->account_id);
-        $command->bindParam(':reason', $this->reason);
-        $command->execute();
-        
-        try
-        {
-            $trx->commit();
-            Tools::log(17, 'Payout ID:'.$this->payout_id, 1);
-        } catch (Exception $ex) {
-            $trx->rollback();
-            Tools::log(17, $ex->getMessage(), 2);
+            Tools::log(15, $ex->getMessage(), 1);
         }
             
     }
