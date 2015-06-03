@@ -160,7 +160,7 @@ $this->widget('zii.widgets.jui.CJuiDatePicker', array(
                 'headerHtmlOptions' => array('style' => 'text-align:center'),
             ),
         array('class'=>'bootstrap.widgets.TbButtonColumn',
-                'template'=>'{details}{process}',
+                'template'=>'{details}{cancel}{process}',
                 'buttons'=>array
                 (
                     'details'=>array
@@ -216,6 +216,26 @@ $this->widget('zii.widgets.jui.CJuiDatePicker', array(
                         ),
                         array('id' => 'send-link-'.uniqid())
                     ),
+                    'cancel'=>array
+                    (
+                        'label'=>'Cancel Payout',
+                        'icon'=>  TbHtml::ICON_TRASH,
+                        'visible'=>'($data["status"] == 0 || $data["status"] == 1) && ' . Yii::app()->user->isAdmin(),
+                        'url'=>'Yii::app()->createUrl("/payout/cancelrequest",array("id"=>$data["payout_id"]))',
+                        'options' => array(
+                            'class'=>"btn btn-small",
+                            'ajax' => array(
+                                'type' => 'GET',
+                                'dataType'=>'json',
+                                'url' => 'js:$(this).attr("href")',
+                                'success' => 'function(data){
+                                    $("#hdn_payout_id").val(data.payout_id);
+                                    $("#cancel-payout-modal").modal("show");
+                                 }',
+                            ),
+                        ),
+                        array('id' => 'send-link-'.uniqid())
+                    ),
                 ),
                 'header'=>'Options',
                 'headerHtmlOptions'=>array('style'=>'text-align:center'),
@@ -229,6 +249,43 @@ $this->widget('zii.widgets.jui.CJuiDatePicker', array(
     'header' => 'Payout Details',
     'content'=>'',
     'footer' => array(
+        TbHtml::button('Close', array('data-dismiss' => 'modal')),
+    ),
+    ));
+?>
+<?php
+$modal_content = TbHtml::hiddenField('hdn_payout_id');
+$modal_content .= TbHtml::label('Reason for Cancellation', 'reason');
+$modal_content .= TbHtml::textArea('reason', '', array('rows'=>5,'cols'=>50,'style'=>'width:95%'));
+
+?>
+<?php $this->widget('bootstrap.widgets.TbModal', array(
+    'id' => 'cancel-payout-modal',
+    'header' => 'Cancel Payout',
+    'content'=>$modal_content,
+    'footer' => array(
+        TbHtml::ajaxSubmitButton('Cancel Payout','cancel',
+                 array(
+                     'data'=>array(
+                         'id'=>'js:function(){return $("#hdn_payout_id").val()}',
+                         'reason'=>'js:function(){return $("#reason").val()}'
+                     ),
+                     'dataType'=>'json',
+                     'type'=>'post',
+                     'success'=>'function(data) {
+                           alert(data.result_msg);
+                           $("#cancel-payout-modal").modal("hide");
+                           $.fn.yiiGridView.update("payout-grid");
+                      }',   
+                      'beforeSend'=>'function(){
+                           if($("#reason").val() == ""){
+                                alert("Please enter a reason for the cancellation.");
+                                return false;
+                           }
+                      }'
+                     ),array('id'=>'ajaxBtnCancel-'.  uniqid(),'color'=>  TbHtml::BUTTON_COLOR_DANGER,
+                         'confirm'=>'Are you sure you want to continue?',
+                         )),
         TbHtml::button('Close', array('data-dismiss' => 'modal')),
     ),
     ));
