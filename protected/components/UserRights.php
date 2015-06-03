@@ -30,6 +30,18 @@ class UserRights extends CWebUser
         }
     }
     
+    public static function isSuperAdmin()
+    {
+        if(Yii::app()->session['account_type_id'] == 1 )
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
     public static function isAdmin()
     {
         if(Yii::app()->session['account_type_id'] == 1 || Yii::app()->session['account_type_id'] == 2 )
