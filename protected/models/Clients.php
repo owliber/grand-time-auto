@@ -13,6 +13,8 @@ class Clients extends CFormModel
     public $sponsor_id;
     public $account_type_id;
     public $lap_no;
+    public $head_count;
+    public $account_code;
     
     public function __construct() {
         $this->_conn = Yii::app()->db;
@@ -173,6 +175,18 @@ class Clients extends CFormModel
         return $result;
     }
     
+    public function getClientInfoByCode()
+    {
+        $conn = $this->_conn;
+        $sql = "SELECT * FROM accounts a
+                    LEFT JOIN account_details ad ON a.account_id = ad.account_id
+                WHERE a.account_code = :account_code;";
+        $command = $conn->createCommand($sql);
+        $command->bindParam(':account_code',$this->account_code);
+        $result = $command->queryRow();
+        return $result;
+    }
+    
     public function getClientSponsor()
     {
         $conn = $this->_conn;
@@ -234,13 +248,53 @@ class Clients extends CFormModel
                       ON a.account_id = p.account_id
                     LEFT OUTER JOIN job_queues jq
                       ON a.account_id = jq.account_id
-                  WHERE a.date_created >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+                  WHERE a.date_created >= DATE_SUB(CURDATE(), INTERVAL 2 WEEK)
                   AND p.account_id IS NULL
                   AND jq.account_id IS NULL;";
         $command = $conn->createCommand($sql);
         $result = $command->queryAll();
         return $result;
     }
+    
+    public function getPendingClient()
+    {
+        $conn = $this->_conn;
+        $sql = "SELECT
+                    a.account_id,
+                    a.sponsor_id,
+                    a.referrer_id,
+                    CASE a.account_type_id WHEN 5 THEN 'Jump Start' WHEN 6 THEN 'Main Turbo' WHEN 7 THEN 'VIP Nitro' END race_type,
+                    a.account_code,
+                    CONCAT(COALESCE(ad.last_name, ''), ' ', COALESCE(ad.first_name, '')) AS account_name,
+                    a.date_created
+                  FROM accounts a
+                    INNER JOIN account_details ad
+                      ON a.account_id = ad.account_id
+                    LEFT OUTER JOIN job_queues jq
+                      ON a.account_id = jq.account_id
+                  WHERE a.date_created >= DATE_SUB(CURDATE(), INTERVAL 1 WEEK)
+                  AND jq.account_id IS NULL;";
+        $command = $conn->createCommand($sql);
+        $result = $command->queryAll();
+        return $result;
+    }
+    
+    public function checkClientWithoutPayout()
+    {
+        $conn = $this->_conn;
+        $sql = "SELECT * FROM payouts WHERE account_id = :account_id AND lap_no = :lap_no and head_count = :head_count";
+        $command = $conn->createCommand($sql);
+        $command->bindParam(':account_id', $this->account_id);
+        $command->bindParam(':lap_no', $this->lap_no);
+        $command->bindParam(':head_count', $this->head_count);
+        $result = $command->queryAll();
+        
+        if(count($result)>0)
+            return true;
+        else
+            return false;
+    }
+    
 }
 
 
